@@ -1,73 +1,136 @@
 # Belajar Membangun Machine Learning Project
 Submission kelas Membangun Proyek Machine Learning (Laskar AI &amp; Dicoding)
-Proyek ini merupakan bagian dari submission akhir untuk kelas Belajar Membangun Machine Learning Project (BMLP). Terdiri dari dua bagian utama:
+Proyek ini merupakan bagian dari submission akhir untuk kelas Belajar Membangun Machine Learning Project (BMLP). 
+Proyek ini bertujuan untuk memahami pola pengeluaran masyarakat Indonesia melalui dua pendekatan utama:
 
-✅ Klasifikasi — Membangun model prediksi untuk memecahkan permasalahan klasifikasi.
+Clustering  — Untuk mengelompokkan masyarakat berdasarkan karakteristik pengeluaran mereka.
 
-✅ Clustering — Melakukan segmentasi pelanggan dengan teknik unsupervised learning.
+Classification — Untuk membangun model prediktif yang dapat mengklasifikasikan data baru ke dalam segmen yang telah terbentuk.
 
-🧠 1. Klasifikasi: Prediksi Dropout Mahasiswa
-Deskripsi
-Proyek klasifikasi ini bertujuan untuk memprediksi apakah seorang mahasiswa akan dropout berdasarkan berbagai fitur akademik dan demografis.
+📊 1. Analisis & Clustering Data Pengeluaran
+🔹 Dataset Awal
+Data bersumber dari Kaggle - Indonesia Household Expenditure. Fitur yang digunakan meliputi:
 
-Alur Pengerjaan
-Data Understanding & EDA
+prov: Provinsi
 
-Menampilkan distribusi dropout, persebaran nilai akademik, dan korelasi antar fitur.
+pengeluaran: Total pengeluaran
 
-Preprocessing
+tahun: Tahun pengeluaran
 
-Encoding kategorikal (LabelEncoder), normalisasi numerikal.
+peng_log: Log dari pengeluaran (untuk normalisasi distribusi)
 
-Penanganan missing values.
+🔹 Preprocessing
+Cleaning: Memastikan tidak ada missing values.
 
-Modeling
+Transformasi log pada fitur pengeluaran agar distribusi lebih normal.
 
-Model yang digunakan: RandomForestClassifier.
+Encoding data kategorikal.
 
-Pipeline scikit-learn dibangun secara end-to-end.
+🔹 Clustering
+Metode clustering yang digunakan adalah K-Means.
 
-Evaluasi
+Preprocessing: Menggunakan PowerTransformer untuk mengurangi skewness.
 
-Menggunakan metrik: accuracy, precision, recall, F1-score, confusion matrix.
+Penentuan jumlah cluster optimal dilakukan dengan:
 
-Deployment
+Elbow Method (Inertia)
 
-Pipeline disimpan sebagai file .pkl menggunakan joblib.
+Silhouette Score
 
-Label encoder disimpan secara terpisah.
+🔹 Hasil Clustering
+Terbentuk tiga segmen masyarakat berdasarkan pola pengeluaran.
 
-Output
-final_model_pipeline.pkl
+Segmentasi mencerminkan kelompok dengan:
 
-label_encoder.pkl
+Pengeluaran rendah
 
-📈 2. Clustering: Segmentasi Pelanggan
-Deskripsi
-Proyek ini bertujuan untuk membagi pelanggan menjadi beberapa segmen berdasarkan perilaku pembelian menggunakan metode Unsupervised Learning (K-Means Clustering).
+Pengeluaran sedang
 
-Alur Pengerjaan
-Data Preparation & EDA
+Pengeluaran tinggi
 
-Menyusun RFM (Recency, Frequency, Monetary).
+🔹 Analisis Tiap Klaster
+Dilakukan eksplorasi terhadap:
 
-Visualisasi distribusi dan outlier handling.
+Distribusi numerik (pengeluaran, tahun)
 
-Preprocessing
+Distribusi berdasarkan provinsi
 
-Menggunakan PowerTransformer untuk normalisasi.
+Rata-rata pengeluaran per cluster
 
-Clustering
+🤖 2. Klasifikasi Hasil Cluster
+Setelah segmentasi terbentuk, kita membangun model klasifikasi untuk memprediksi klaster berdasarkan fitur numerik.
 
-Menentukan jumlah klaster optimal menggunakan Elbow Method & Silhouette Score.
+🔹 Dataset
+Dataset hasil_clustering.csv yang merupakan hasil akhir dari proses clustering.
 
-Algoritma: KMeans.
+🔹 Fitur yang digunakan:
+peng (pengeluaran)
 
-Interpretasi Klaster
+tahun
 
-Analisis segmentasi berdasarkan nilai RFM.
+peng_log (pengeluaran log)
 
-Output
-Visualisasi hasil klaster (scatter plot dan pairplot).
+Target: Cluster (hasil dari K-Means)
 
-Penamaan segmen berdasarkan profil pelanggan.
+🔹 Preprocessing:
+StandardScaler digunakan untuk penyesuaian skala fitur numerik.
+
+SelectKBest digunakan untuk feature selection berbasis ANOVA F-score.
+
+🔹 Algoritma yang digunakan:
+Logistic Regression
+
+K-Nearest Neighbors (KNN)
+
+🔹 Evaluasi Model Awal:
+Model	Train Accuracy	Test Accuracy	Train F1	Test F1
+Logistic Regression	0.9928	0.9934	0.9928	0.9934
+KNN (k=15)	0.9953	0.9956	0.9953	0.9956
+
+Logistic Regression: Stabil, cepat, dan akurat tanpa tuning ekstrem.
+
+KNN: Akurat namun memerlukan tuning n_neighbors agar tidak overfit.
+
+🔹 Tuning Model:
+Dilakukan GridSearchCV dan RandomizedSearchCV untuk optimasi hyperparameter:
+
+Logistic Regression: C, solver, max_iter
+
+KNN: n_neighbors, p, weights
+
+🔹 Evaluasi Setelah Tuning:
+Model	Train Accuracy	Test Accuracy	Train F1	Test F1
+Logistic Regression	0.9986	0.9967	0.9986	0.9967
+KNN (tuned)	0.9953	0.9945	0.9953	0.9945
+
+🔹 Learning Curve:
+Learning curve digunakan untuk memvisualisasikan kestabilan model seiring bertambahnya data latih.
+
+🔍 Analisis Perbandingan Model
+Logistic Regression:
+
+Kelebihan: Stabil, cepat, dan hasil sangat akurat.
+
+Kelemahan: Kurang fleksibel untuk data non-linear.
+
+KNN:
+
+Kelebihan: Sangat akurat jika parameter optimal.
+
+Kelemahan: Rentan overfitting dan lambat saat inferensi data besar.
+
+📈 Visualisasi Tambahan
+Confusion matrix untuk kedua model.
+
+Learning curve untuk masing-masing algoritma.
+
+Distribusi klaster berdasarkan fitur numerik dan kategorikal.
+
+✅ Rekomendasi Lanjutan
+Coba model lain: SVM, Random Forest, XGBoost untuk membandingkan performa.
+
+Tambahkan fitur baru (feature engineering) untuk meningkatkan daya prediksi model.
+
+Lakukan validasi silang dengan data tahun berbeda untuk uji generalisasi.
+
+Kembangkan model klasifikasi menjadi API untuk digunakan secara real-time.
